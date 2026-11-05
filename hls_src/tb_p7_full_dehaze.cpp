@@ -11,8 +11,8 @@
 // P7 NOTE-3 EARLY-HIST C-SIM / RTL CO-SIM — REAL PPM IMAGE
 // ============================================================
 //
-// Input : E:/FPGA/input.ppm
-// Output: E:/FPGA/output_hls.ppm (frame 1 only); optional P7_OUTPUT_PPM override.
+// Input : D:/semester_9/chuyende_2/CD2_final/hls_output/input.ppm
+// Output: D:/semester_9/chuyende_2/CD2_final/hls_output/output_hls.ppm (frame 1 only).
 //
 // Requirements:
 //   - P6 binary PPM
@@ -27,16 +27,8 @@
 // Python comparison must use the estimated A and the same omega as HLS.
 // ============================================================
 
-static const char* INPUT_PPM = "E:/FPGA/input.ppm";
-static const char* OUTPUT_PPM = "E:/FPGA/output_hls.ppm";
-static const char* input_path() {
-    const char* p=std::getenv("P7_INPUT_PPM");
-    return p && *p ? p : INPUT_PPM;
-}
-static const char* output_path() {
-    const char* p=std::getenv("P7_OUTPUT_PPM");
-    return p && *p ? p : OUTPUT_PPM; // save frame 1 by default
-}
+static const char* INPUT_PPM = "D:/semester_9/chuyende_2/CD2_final/hls_output/input.ppm";
+static const char* OUTPUT_PPM = "D:/semester_9/chuyende_2/CD2_final/hls_output/output_hls.ppm";
 
 // ------------------------------------------------------------
 // Read one PPM header token while supporting # comments.
@@ -362,8 +354,8 @@ int main() {
         << "================================================\n"
         << " P7 NOTE-3 FAST2 TIMING1 Recursive Lag1 Q12: REPEATED-IMAGE A WARM-UP TEST\n"
         << "================================================\n"
-        << "Input      : " << input_path() << "\n"
-        << "Output     : " << (output_path() ? output_path() : "<disabled>") << "\n"
+        << "Input      : " << INPUT_PPM << "\n"
+        << "Output     : " << OUTPUT_PPM << "\n"
         << "Resolution : " << P7_WIDTH << "x" << P7_HEIGHT << "\n"
         << "Top        : dehaze_p7_full_stream\n"
         << "Frames     : 2 identical input frames, no DUT reset\n"
@@ -376,7 +368,7 @@ int main() {
     hls::stream<p7_axis_rgb_t> out("p7_out");
     std::vector<unsigned int> input_rgb;
 
-    if (!load_ppm_to_axis(input_path(), in, input_rgb))
+    if (!load_ppm_to_axis(INPUT_PPM, in, input_rgb))
         return 1;
 
     for (int frame = 0; frame < 2; ++frame) {
@@ -394,7 +386,7 @@ int main() {
         // Both frames undergo the same pixel/protocol validation.
         // Only the second frame is written to the existing output filename.
         if (!check_and_save_output(out, input_rgb,
-                                   frame == 1 ? output_path() : 0))
+                                   frame == 1 ? OUTPUT_PPM : 0))
             return 1;
     }
 
